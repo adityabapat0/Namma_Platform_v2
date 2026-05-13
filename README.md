@@ -28,7 +28,7 @@ A high-performance, bilingual Android application designed to provide real-time 
 ## ⚙️ Installation & Setup
 
 1. **Clone the repository:**
-   bash git clone https://github.com/adityabapat0/NammaPlatform2.git
+   bash git clone https://github.com/adityabapat0/Namma_Platform_v2.git
 
 2. **Open in Android Studio:**
    - Go to `File > Open` and select the `NammaPlatform2` folder.
