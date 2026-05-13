@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>ನಮ್ಮ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Baloo+Bhai+2:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--saffron:#E8772E;--saffron-dark:#C45E18;--navy:#1A2B4A;--navy-light:#243659;--cream:#FDF6EC;--green-rail:#2E7D4F;--gold:#D4A017;--ladies:#C0398A}
+body{font-family:'Baloo Bhai 2',sans-serif;background:#0f1923;display:flex;justify-content:center;padding:8px 0 24px;min-height:100vh}
+
+/* ============ AUTH SCREENS ============ */
+.auth-shell{width:100%;max-width:400px;background:var(--navy);border-radius:24px;overflow:hidden;border:2px solid #2E4070;min-height:720px;display:flex;flex-direction:column}
+.auth-logo-area{background:linear-gradient(135deg,#111E35,#1A2B4A);padding:40px 20px 30px;text-align:center;border-bottom:3px solid var(--saffron)}
+.auth-logo-icon{width:72px;height:72px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px}
+.auth-title-kn{font-family:'Noto Sans Kannada',sans-serif;font-size:22px;font-weight:700;color:var(--saffron);margin-bottom:3px}
+.auth-title-en{font-size:10px;color:#7B8FAA;letter-spacing:1.5px;text-transform:uppercase}
+.auth-body{flex:1;padding:24px 20px 30px;display:flex;flex-direction:column;gap:0}
+.auth-tabs{display:flex;background:rgba(0,0,0,.25);border-radius:12px;padding:4px;margin-bottom:22px}
+.auth-tab{flex:1;padding:9px;border-radius:9px;border:none;background:none;cursor:pointer;font-family:'Baloo Bhai 2',sans-serif;font-size:13px;font-weight:600;color:#7B8FAA;transition:all .2s}
+.auth-tab.active{background:var(--saffron);color:white;box-shadow:0 3px 10px rgba(232,119,46,.35)}
+.auth-field{margin-bottom:14px}
+.auth-field label{display:block;font-size:10px;color:#9BAABB;letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+.auth-field label .kn{font-family:'Noto Sans Kannada',sans-serif;font-size:11px;letter-spacing:0;text-transform:none}
+.auth-inp{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;color:#F0E8D5;font-size:14px;font-family:'Baloo Bhai 2',sans-serif;outline:none;transition:border-color .2s}
+.auth-inp::placeholder{color:#556677}
+.auth-inp:focus{border-color:var(--saffron)}
+.auth-btn{width:100%;background:linear-gradient(135deg,#C45E18,#E8772E);border:none;border-radius:12px;padding:13px;color:white;font-family:'Noto Sans Kannada',sans-serif;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(196,94,24,.35);margin-top:6px;transition:transform .15s,box-shadow .15s}
+.auth-btn:active{transform:scale(.97)}
+.auth-btn-sub{font-family:'Baloo Bhai 2',sans-serif;font-size:10px;opacity:.75;display:block;margin-top:2px}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0}
+.auth-divider-line{flex:1;height:1px;background:rgba(255,255,255,.1)}
+.auth-divider-txt{font-size:10px;color:#556677}
+.auth-err{background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.3);border-radius:8px;padding:9px 12px;font-size:12px;color:#FF8A80;display:none;margin-bottom:10px}
+.auth-err.show{display:block}
+.guest-btn{width:100%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:11px;color:#A0B0C0;font-family:'Baloo Bhai 2',sans-serif;font-size:13px;cursor:pointer;transition:background .2s}
+.guest-btn:hover{background:rgba(255,255,255,.1)}
+
+/* ============ MAIN APP ============ */
+.shell{width:100%;max-width:400px;background:var(--navy);border-radius:24px;overflow:hidden;border:2px solid #2E4070;display:flex;flex-direction:column;min-height:720px;display:none}
+.shell.visible{display:flex}
+.sbar{background:#111E35;padding:6px 16px 4px;display:flex;justify-content:space-between;font-size:10px;color:#8899BB}
+.hdr{background:linear-gradient(135deg,#1A2B4A,#243659);padding:10px 14px 12px;border-bottom:3px solid var(--saffron);position:relative;z-index:20}
+.hrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.logo{width:32px;height:32px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.atk{font-size:16px;font-weight:700;color:var(--saffron);font-family:'Noto Sans Kannada',sans-serif}
+.ate{font-size:8px;color:#7B8FAA;letter-spacing:1px;text-transform:uppercase}
+
+/* User button & profile dropdown */
+.ubtn{margin-left:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:4px 10px;color:#C0B090;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:'Baloo Bhai 2',sans-serif;position:relative;z-index:30}
+.ubtn:hover{background:rgba(255,255,255,.14)}
+.profile-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:#1A2B4A;border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:4px;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:100;display:none;animation:fi .2s ease}
+.profile-dropdown.open{display:block}
+.pd-user{padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.pd-avatar{width:40px;height:40px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px}
+.pd-name{font-size:14px;font-weight:700;color:#F0E8D5}
+.pd-email{font-size:11px;color:#7B8FAA;margin-top:2px}
+.pd-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;color:#C0B090;font-size:13px;transition:background .15s}
+.pd-item:hover{background:rgba(255,255,255,.07)}
+.pd-item.danger{color:#FF7B7B}
+.pd-item.danger:hover{background:rgba(198,40,40,.12)}
+
+.stnbar{background:rgba(255,255,255,.06);border-radius:10px;padding:7px 12px;display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(255,255,255,.1)}
+.stnbar:hover{background:rgba(255,255,255,.1)}
+.slbl{font-size:8px;color:#7B8FAA;letter-spacing:.6px;text-transform:uppercase}
+.snm{font-size:13px;font-weight:600;color:#F0E8D5}
+.snkn{font-family:'Noto Sans Kannada',sans-serif;font-size:11px;color:#C0B090}
+.spick{display:none;background:var(--navy-light);padding:10px 14px;max-height:180px;overflow-y:auto;border-bottom:1px solid rgba(255,255,255,.08)}
+.spick.open{display:block}
+.ssrch{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:7px 10px;color:#F0E8D5;font-size:12px;margin-bottom:6px;font-family:'Baloo Bhai 2',sans-serif;outline:none}
+.ssrch::placeholder{color:#556677}
+.sopt{padding:7px 8px;border-radius:7px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.sopt:hover{background:rgba(232,119,46,.15)}
+.sopt.active{background:rgba(232,119,46,.25);border-left:3px solid var(--saffron)}
+.sne{font-size:12px;font-weight:600;color:#F0E8D5}
+.snkn2{font-family:'Noto Sans Kannada',sans-serif;font-size:11px;color:#9BAABB}
+.scode{font-size:9px;color:var(--saffron);font-weight:700}
+.page{display:none;flex:1;overflow-y:auto}
+.page.active{display:block}
+.pc{padding:12px 14px 70px;background:var(--cream);min-height:500px}
+.slbl2{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sdot{width:7px;height:7px;background:var(--saffron);border-radius:50%;flex-shrink:0}
+.slkn{font-family:'Noto Sans Kannada',sans-serif;font-size:14px;font-weight:600;color:var(--navy)}
+.slen{font-size:10px;color:#8899BB}
+
+/* Train card — fixed text colors */
+.tcard{background:white;border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 2px 6px rgba(26,43,74,.08);cursor:pointer;transition:transform .15s}
+.tcard:hover{transform:translateY(-1px)}
+.tcard.sel{border:2px solid var(--saffron)}
+.tch{background:var(--navy);padding:8px 12px;display:flex;align-items:center;gap:7px}
+.tch.nxt{background:linear-gradient(90deg,#C45E18,#E8772E)}
+.nbadge{background:white;color:var(--saffron-dark);font-size:8px;font-weight:700;padding:2px 6px;border-radius:16px}
+.tnum{font-size:12px;font-weight:700;color:white}
+.ttime{margin-left:auto;font-size:14px;font-weight:700;color:white}
+.ttlbl{font-size:8px;color:rgba(255,255,255,.7);text-align:right}
+.tcb{padding:8px 12px 10px;background:white}
+/* FIXED: explicit dark colors so text shows without hover */
+.tnkn{font-family:'Noto Sans Kannada',sans-serif;font-size:13px;font-weight:600;color:#1A2B4A}
+.tnen{font-size:10px;color:#556677;margin-bottom:4px}
+.tmeta{display:flex;gap:10px;flex-wrap:wrap;margin-top:3px}
+.mitem{display:flex;flex-direction:column}
+.mkey{font-size:8px;color:#778899;text-transform:uppercase;letter-spacing:.4px}
+.pbadge{display:inline-flex;align-items:center;gap:4px;background:#EAF6EF;border:1px solid #A8D8BC;border-radius:7px;padding:2px 8px}
+.pnum{font-size:22px;font-weight:700;color:var(--green-rail);line-height:1}
+.ptkn{font-family:'Noto Sans Kannada',sans-serif;font-size:9px;color:var(--green-rail);font-weight:600}
+.avb{font-size:9px;font-weight:700;padding:2px 7px;border-radius:16px}
+.av{background:#e8f5e9;color:#2e7d32}.wl{background:#fff3e0;color:#e65100}.fl{background:#ffebee;color:#c62828}
+.sbtn{background:none;border:none;cursor:pointer;font-size:16px;padding:2px 5px}
+/* Destination text in card */
+.dest-en{font-size:12px;font-weight:700;color:#1A2B4A}
+.dest-kn{font-family:'Noto Sans Kannada',sans-serif;font-size:11px;color:#445566}
+
+/* Sahaya Madi button inside each card */
+.card-sahaya{width:100%;background:linear-gradient(135deg,#1A2B4A,#243659);border:none;border-radius:10px;padding:9px 12px;color:white;font-family:'Noto Sans Kannada',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;transition:transform .15s,opacity .15s}
+.card-sahaya:active{transform:scale(.97);opacity:.85}
+.card-sahaya .mic-sm{width:24px;height:24px;background:rgba(232,119,46,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.card-sahaya .sub-sm{font-family:'Baloo Bhai 2',sans-serif;font-size:9px;opacity:.7;display:block;margin-top:1px}
+
+.csec{background:white;border-radius:12px;padding:10px 12px;border:1px solid #E8DDD0;margin-top:10px;box-shadow:0 2px 6px rgba(26,43,74,.06)}
+.cswrap{overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.cstrip{display:flex;align-items:center;width:max-content;padding:6px 3px 3px}
+.citem{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.cbox{width:46px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white;border:1px solid rgba(0,0,0,.1)}
+.cbox.engine{background:#2C3E50;border-radius:8px 3px 3px 8px}
+.cbox.general{background:#E8772E}.cbox.sleeper{background:#1565C0}.cbox.ladies{background:#C0398A}.cbox.ac{background:#00838F}.cbox.guard{background:#558B2F;border-radius:3px 8px 8px 3px}.cbox.pantry{background:#6A1B9A}
+.cconn{width:8px;height:2px;background:#C0B090;flex-shrink:0}
+.clbl{font-size:8px;color:#556677;text-align:center;max-width:46px}
+.clkn{font-family:'Noto Sans Kannada',sans-serif;font-size:8px;color:#778899}
+.cwhl{display:flex;gap:3px;margin-top:1px}
+.wh{width:7px;height:7px;border-radius:50%;background:#8B9BB4;border:1px solid #667788}
+.tline{height:3px;background:repeating-linear-gradient(90deg,#8B9BB4 0,#8B9BB4 10px,#C0B090 10px,#C0B090 17px);border-radius:2px;margin:3px 0 2px}
+.cttip{display:none;background:var(--navy);color:white;border-radius:7px;padding:7px 10px;font-size:11px;margin-top:6px;text-align:center}
+.cttip.show{display:block}
+.cttip .kn{font-family:'Noto Sans Kannada',sans-serif;font-size:12px}
+.shint{text-align:center;font-size:9px;color:#778899;margin-top:3px}
+.hbtn{width:100%;background:linear-gradient(135deg,#C45E18,#E8772E);border:none;border-radius:14px;padding:12px;color:white;font-family:'Noto Sans Kannada',sans-serif;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;box-shadow:0 4px 14px rgba(196,94,24,.35)}
+.hbtn:active{transform:scale(.97)}
+.hbtn .sub{font-family:'Baloo Bhai 2',sans-serif;font-size:10px;opacity:.8;display:block;margin-top:1px}
+.mic{width:30px;height:30px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ann{background:linear-gradient(135deg,#1A2B4A,#243659);border-radius:10px;padding:12px;margin-top:8px;border-left:4px solid var(--saffron);display:none;animation:fi .3s ease}
+.ann.show{display:block}
+.ankn{font-family:'Noto Sans Kannada',sans-serif;font-size:13px;color:#F0E8D5;line-height:1.7}
+.anicon{font-size:16px;margin-bottom:4px;display:block}
+.sdots{display:inline-flex;gap:3px;align-items:center;margin-left:6px}
+.sdots span{width:5px;height:5px;background:var(--saffron);border-radius:50%;animation:bo .8s infinite}
+.sdots span:nth-child(2){animation-delay:.15s}.sdots span:nth-child(3){animation-delay:.3s}
+@keyframes bo{0%,80%,100%{transform:scale(1);opacity:.5}40%{transform:scale(1.4);opacity:1}}
+.tsts{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--saffron);margin-top:4px}
+.srchdr{background:linear-gradient(135deg,#1A2B4A,#243659);padding:12px 14px 18px;border-bottom:3px solid var(--saffron)}
+.srtk{font-family:'Noto Sans Kannada',sans-serif;font-size:17px;font-weight:700;color:#F0E8D5}
+.srte{font-size:9px;color:#7B8FAA;letter-spacing:.8px}
+.srcard{background:white;border-radius:14px;margin:-12px 12px 0;padding:14px;border:1px solid #E8DDD0;box-shadow:0 4px 16px rgba(26,43,74,.12)}
+.srrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.srico{font-size:14px;flex-shrink:0}
+.srfw{flex:1}
+.srfl{font-size:9px;color:#556677;text-transform:uppercase;letter-spacing:.4px}
+.srsel{width:100%;background:#F5F5F5;border:1.5px solid #E0D8D0;border-radius:9px;padding:9px 10px;font-family:'Baloo Bhai 2',sans-serif;font-size:13px;color:var(--navy);outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23E8772E' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+.srsel:focus{border-color:var(--saffron)}
+.swpbtn{background:var(--saffron);border:none;border-radius:8px;padding:7px 9px;cursor:pointer;font-size:14px;color:white}
+.dvinp{width:100%;background:#F5F5F5;border:1.5px solid #E0D8D0;border-radius:9px;padding:9px 10px;font-family:'Baloo Bhai 2',sans-serif;font-size:13px;color:var(--navy);outline:none}
+.dvinp:focus{border-color:var(--saffron)}
+.srsub{width:100%;background:linear-gradient(135deg,#C45E18,#E8772E);border:none;border-radius:11px;padding:12px;color:white;font-family:'Baloo Bhai 2',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 4px 12px rgba(196,94,24,.3)}
+.dvswap{display:flex;align-items:center;gap:6px;margin:2px 0 8px}
+.dvline{flex:1;height:1px;background:#E0D8D0}
+.srres{padding:14px}
+.notr{text-align:center;padding:32px 16px;color:#9BAABB}
+.ntico{font-size:36px;margin-bottom:10px}
+.ntkn{font-family:'Noto Sans Kannada',sans-serif;font-size:15px;color:#556677;margin-bottom:4px}
+.srmt{font-size:10px;color:#9BAABB;margin-bottom:10px}
+.rtbann{background:var(--navy);border-radius:10px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.rtft{font-size:13px;font-weight:700;color:white}
+.rtarr{color:var(--saffron);font-size:14px}
+.svhdr{background:linear-gradient(135deg,#1A2B4A,#243659);padding:12px 14px;border-bottom:3px solid var(--saffron)}
+.svtk{font-family:'Noto Sans Kannada',sans-serif;font-size:17px;font-weight:700;color:#F0E8D5}
+.svte{font-size:9px;color:#7B8FAA;letter-spacing:.8px}
+.svcnt{padding:14px 14px 70px;background:var(--cream);min-height:440px}
+.svmt{text-align:center;padding:50px 16px}
+.svmico{font-size:44px;margin-bottom:10px}
+.svmkn{font-family:'Noto Sans Kannada',sans-serif;font-size:16px;color:#8899BB;margin-bottom:3px}
+.svmen{font-size:11px;color:#A0B0C0}
+.svcard{background:white;border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid #E8DDD0;box-shadow:0 2px 6px rgba(26,43,74,.08)}
+.svch{background:var(--navy);padding:8px 12px;display:flex;align-items:center;gap:7px}
+.svcb{padding:8px 12px 10px;background:white}
+.dsbtn{margin-left:auto;background:none;border:none;cursor:pointer;color:#FF7B7B;font-size:14px}
+.infhdr{background:linear-gradient(135deg,#1A2B4A,#243659);padding:12px 14px;border-bottom:3px solid var(--saffron)}
+.inftk{font-family:'Noto Sans Kannada',sans-serif;font-size:17px;font-weight:700;color:#F0E8D5}
+.infte{font-size:9px;color:#7B8FAA;letter-spacing:.8px}
+.infcnt{padding:14px 14px 70px;background:var(--cream)}
+.infcard{background:white;border-radius:12px;padding:14px;border:1px solid #E8DDD0;margin-bottom:10px;box-shadow:0 2px 6px rgba(26,43,74,.06)}
+.infct{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.lgrow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.lgbox{width:32px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:white;flex-shrink:0}
+.lgbox.engine{background:#2C3E50}.lgbox.general{background:#E8772E}.lgbox.sleeper{background:#1565C0}.lgbox.ladies{background:#C0398A}.lgbox.ac{background:#00838F}.lgbox.guard{background:#558B2F}.lgbox.pantry{background:#6A1B9A}
+.lgtk{font-family:'Noto Sans Kannada',sans-serif;font-size:12px;color:var(--navy)}
+.lgte{font-size:10px;color:#778899}
+.tiprow{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.tipico{font-size:16px;flex-shrink:0}
+.tipkn{font-family:'Noto Sans Kannada',sans-serif;font-size:12px;color:var(--navy)}
+.tipen{font-size:10px;color:#778899;margin-top:1px}
+.abtk{font-family:'Noto Sans Kannada',sans-serif;font-size:13px;color:var(--navy);line-height:1.8}
+.abte{font-size:11px;color:#778899;line-height:1.6;margin-top:5px}
+.fbbadge{display:flex;align-items:center;justify-content:center;gap:5px;background:#FFF3E0;border:1px solid #FFB74D;border-radius:8px;padding:7px 12px;margin-top:8px}
+.fbt{font-size:10px;color:#E65100;font-weight:600}
+.ver{text-align:center;font-size:10px;color:#A0B0C0;margin-top:6px}
+.nav{background:var(--navy);display:flex;justify-content:space-around;padding:8px 0 12px;border-top:1px solid rgba(255,255,255,.08);position:sticky;bottom:0;z-index:10}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:3px 10px;border-radius:8px}
+.ni:hover{background:rgba(255,255,255,.06)}
+.ni.active .nicon{filter:drop-shadow(0 0 5px var(--saffron))}
+.nicon{font-size:18px}
+.nlbl{font-size:8px;color:#7B8FAA;letter-spacing:.4px}
+.ni.active .nlbl{color:var(--saffron)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#F0E8D5;padding:8px 16px;border-radius:16px;font-size:12px;font-family:'Noto Sans Kannada',sans-serif;opacity:0;transition:all .3s;pointer-events:none;z-index:200;border:1px solid rgba(255,255,255,.15);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH SHELL ============ -->
+<div class="auth-shell" id="authShell">
+  <div class="auth-logo-area">
+    <div class="auth-logo-icon">🚂</div>
+    <div class="auth-title-kn">ನಮ್ಮ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</div>
+    <div class="auth-title-en">Namma-Platform · Railway Guide</div>
+  </div>
+  <div class="auth-body">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">ಪ್ರವೇಶಿಸಿ / Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">ನೋಂದಣಿ / Sign Up</button>
+    </div>
+
+    <!-- Login form -->
+    <div id="loginForm">
+      <div class="auth-err" id="loginErr"></div>
+      <div class="auth-field">
+        <label>Email · <span class="kn">ಇಮೇಲ್</span></label>
+        <input class="auth-inp" type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label>Password · <span class="kn">ಪಾಸ್‌ವರ್ಡ್</span></label>
+        <input class="auth-inp" type="password" id="loginPwd" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">
+        ಪ್ರವೇಶಿಸಿ
+        <span class="auth-btn-sub">Login to your account</span>
+      </button>
+    </div>
+
+    <!-- Signup form -->
+    <div id="signupForm" style="display:none">
+      <div class="auth-err" id="signupErr"></div>
+      <div class="auth-field">
+        <label>Full Name · <span class="kn">ಹೆಸರು</span></label>
+        <input class="auth-inp" type="text" id="signupName" placeholder="Your full name" autocomplete="name"/>
+      </div>
+      <div class="auth-field">
+        <label>Email · <span class="kn">ಇಮೇಲ್</span></label>
+        <input class="auth-inp" type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label>Password · <span class="kn">ಪಾಸ್‌ವರ್ಡ್</span></label>
+        <input class="auth-inp" type="password" id="signupPwd" placeholder="Min 6 characters" autocomplete="new-password"/>
+      </div>
+      <div class="auth-field">
+        <label>Confirm Password · <span class="kn">ಪಾಸ್‌ವರ್ಡ್ ದೃಢೀಕರಿಸಿ</span></label>
+        <input class="auth-inp" type="password" id="signupPwd2" placeholder="Repeat password" autocomplete="new-password"/>
+      </div>
+      <button class="auth-btn" onclick="doSignup()">
+        ನೋಂದಣಿ ಮಾಡಿ
+        <span class="auth-btn-sub">Create your account</span>
+      </button>
+    </div>
+
+    <div class="auth-divider">
+      <div class="auth-divider-line"></div>
+      <span class="auth-divider-txt">or</span>
+      <div class="auth-divider-line"></div>
+    </div>
+    <button class="guest-btn" onclick="doGuest()">👤 ಅತಿಥಿಯಾಗಿ ಮುಂದುವರಿಯಿರಿ / Continue as Guest</button>
+  </div>
+</div>
+
+<!-- ============ MAIN APP SHELL ============ -->
+<div class="shell" id="shell">
+  <div class="sbar"><span id="clk">--:--</span><span>●●● WiFi 🔋</span></div>
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="hrow">
+      <div class="logo">🚂</div>
+      <div><div class="atk">ನಮ್ಮ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</div><div class="ate">Namma-Platform · Railway Guide</div></div>
+      <!-- User button with dropdown -->
+      <div class="ubtn" id="userBtn" onclick="toggleProfile(event)">
+        👤 <span id="uname">User</span> ▾
+        <div class="profile-dropdown" id="profileDrop" onclick="event.stopPropagation()">
+          <div class="pd-user">
+            <div class="pd-avatar">👤</div>
+            <div class="pd-name" id="pdName">—</div>
+            <div class="pd-email" id="pdEmail">—</div>
+          </div>
+          <div class="pd-item" onclick="closeProfile()">⚙️ ಸೆಟ್ಟಿಂಗ್ / Settings</div>
+          <div class="pd-item danger" onclick="doSignOut()">🚪 ಸೈನ್ ಔಟ್ / Sign Out</div>
+        </div>
+      </div>
+    </div>
+    <div id="stnwrap">
+      <div class="stnbar" onclick="togglePicker()">
+        <span>📍</span>
+        <div><div class="slbl">Current Station · ನಿಲ್ದಾಣ</div>
+          <div style="display:flex;gap:5px;align-items:baseline;">
+            <span class="snm" id="snEn">Arsikere</span>
+            <span class="snkn" id="snKn">ಅರಸೀಕೆರೆ</span>
+          </div>
+        </div>
+        <span style="color:var(--saffron);margin-left:auto;">▾</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATION PICKER -->
+  <div class="spick" id="spick">
+    <input class="ssrch" type="text" placeholder="ನಿಲ್ದಾಣ ಹುಡುಕಿ / Search station..." oninput="filterStn(this.value)"/>
+    <div id="slist"></div>
+  </div>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="pgHome">
+    <div class="pc">
+      <div class="slbl2"><div class="sdot"></div><span class="slkn">ಮುಂದಿನ ರೈಲುಗಳು</span><span class="slen">Upcoming Trains</span></div>
+      <div id="tlist"></div>
+      <div class="csec">
+        <div class="slbl2" style="margin-bottom:6px;"><div class="sdot"></div><span class="slkn" style="font-size:12px;">ಕೋಚ್ ವಿನ್ಯಾಸ</span><span class="slen">Coach Layout</span><span id="ctnm" style="font-size:10px;color:#778899;margin-left:auto;"></span></div>
+        <div class="cswrap"><div class="cstrip" id="cstrip"></div><div class="tline"></div></div>
+        <div class="shint">← ಎಡ-ಬಲ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ →</div>
+        <div id="cttip" class="cttip"></div>
+      </div>
+      <button class="hbtn" onclick="doSpeak()">
+        <div class="mic">🔊</div>
+        <div><div>ಸಹಾಯ ಮಾಡಿ</div><span class="sub">Tap for Kannada Voice Announcement</span></div>
+      </button>
+      <div class="ann" id="annBox">
+        <span class="anicon">📢</span>
+        <div class="ankn" id="annTxt"></div>
+        <div class="tsts" id="annSts"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH PAGE -->
+  <div class="page" id="pgSearch">
+    <div class="srchdr"><div class="srtk">ರೈಲು ಹುಡುಕಿ</div><div class="srte">Search Trains · From → To</div></div>
+    <div style="padding:0 0 14px;background:linear-gradient(135deg,#1A2B4A,#243659);">
+      <div class="srcard">
+        <div class="srrow">
+          <span class="srico" style="color:#E8772E;">🔴</span>
+          <div class="srfw"><div class="srfl">From · ಇಲ್ಲಿಂದ</div><select class="srsel" id="srFrom"></select></div>
+        </div>
+        <div class="dvswap"><div class="dvline"></div><button class="swpbtn" onclick="doSwap()">⇅</button><div class="dvline"></div></div>
+        <div class="srrow">
+          <span class="srico" style="color:#2E7D4F;">🟢</span>
+          <div class="srfw"><div class="srfl">To · ಎಲ್ಲಿಗೆ</div><select class="srsel" id="srTo"></select></div>
+        </div>
+        <div class="srrow" style="margin-bottom:0;">
+          <span class="srico">📅</span>
+          <div class="srfw"><div class="srfl">Date · ದಿನಾಂಕ</div><input class="dvinp" type="date" id="srDate"/></div>
+        </div>
+        <button class="srsub" onclick="doSearch()">🔍 &nbsp;ರೈಲು ಹುಡುಕಿ / Search Trains</button>
+      </div>
+    </div>
+    <div class="srres" id="srRes">
+      <div class="notr"><div class="ntico">🚉</div><div class="ntkn">ಹುಡುಕಾಟ ಫಲಿತಾಂಶ ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ</div><div style="font-size:10px;color:#A0B0C0;margin-top:4px;">Search results will appear here</div></div>
+    </div>
+    <div style="padding:0 14px 14px;">
+      <div class="ann" id="srAnnBox"><span class="anicon">📢</span><div class="ankn" id="srAnnTxt"></div><div class="tsts" id="srAnnSts"></div></div>
+    </div>
+  </div>
+
+  <!-- SAVED PAGE -->
+  <div class="page" id="pgSaved">
+    <div class="svhdr"><div class="svtk">⭐ ಉಳಿಸಿದ ರೈಲುಗಳು</div><div class="svte">Saved Trains · Your Bookmarks</div></div>
+    <div class="svcnt" id="svCnt">
+      <div class="svmt"><div class="svmico">⭐</div><div class="svmkn">ಉಳಿಸಿದ ರೈಲುಗಳು ಇಲ್ಲ</div><div class="svmen">No saved trains yet. Tap ☆ on any train card to save it.</div></div>
+    </div>
+  </div>
+
+  <!-- INFO PAGE -->
+  <div class="page" id="pgInfo">
+    <div class="infhdr"><div class="inftk">ℹ️ ಮಾಹಿತಿ</div><div class="infte">Information &amp; Help</div></div>
+    <div class="infcnt">
+      <div class="infcard">
+        <div class="infct">🚃 ಕೋಚ್ ಬಣ್ಣ ಮಾರ್ಗದರ್ಶಿ / Coach Colour Guide</div>
+        <div class="lgrow"><div class="lgbox engine">ENG</div><div><div class="lgtk">ಎಂಜಿನ್ (ಚಾಲಕ)</div><div class="lgte">Engine / Locomotive</div></div></div>
+        <div class="lgrow"><div class="lgbox general">GEN</div><div><div class="lgtk">ಸಾಮಾನ್ಯ ಡಬ್ಬಿ (ಮುಂಗಡ ಬೇಡ)</div><div class="lgte">General – No reservation needed</div></div></div>
+        <div class="lgrow"><div class="lgbox sleeper">SL</div><div><div class="lgtk">ಸ್ಲೀಪರ್ ಕ್ಲಾಸ್</div><div class="lgte">Sleeper Class – Reserved berths</div></div></div>
+        <div class="lgrow"><div class="lgbox ladies">L</div><div><div class="lgtk">ಮಹಿಳಾ ಡಬ್ಬಿ (ಮಹಿಳೆಯರು ಮಾತ್ರ)</div><div class="lgte">Ladies Coach – Women only</div></div></div>
+        <div class="lgrow"><div class="lgbox ac">AC</div><div><div class="lgtk">ಹವಾನಿಯಂತ್ರಿತ ಡಬ್ಬಿ</div><div class="lgte">Air Conditioned Coach</div></div></div>
+        <div class="lgrow"><div class="lgbox pantry">PAN</div><div><div class="lgtk">ಊಟದ ಡಬ್ಬಿ</div><div class="lgte">Pantry / Food Car</div></div></div>
+        <div class="lgrow"><div class="lgbox guard">GRD</div><div><div class="lgtk">ಕಾವಲು ಡಬ್ಬಿ</div><div class="lgte">Guard Van</div></div></div>
+      </div>
+      <div class="infcard">
+        <div class="infct">💡 ಸಹಾಯಕ ಸಲಹೆಗಳು / Helpful Tips</div>
+        <div class="tiprow"><span class="tipico">🔊</span><div><div class="tipkn">ಪ್ರತಿ ರೈಲಿನ ಕಾರ್ಡ್‌ನಲ್ಲಿ "ಸಹಾಯ ಮಾಡಿ" ಗುಂಡಿ ಒತ್ತಿ</div><div class="tipen">Press "ಸಹಾಯ ಮಾಡಿ" on each train card for Kannada voice</div></div></div>
+        <div class="tiprow"><span class="tipico">⭐</span><div><div class="tipkn">ಮೆಚ್ಚಿನ ರೈಲುಗಳನ್ನು ☆ ಒತ್ತಿ ಉಳಿಸಿ</div><div class="tipen">Save trains by tapping ☆ on any card</div></div></div>
+        <div class="tiprow"><span class="tipico">🔍</span><div><div class="tipkn">Search ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಯಾವ ನಿಲ್ದಾಣದಿಂದ ಯಾವ ನಿಲ್ದಾಣಕ್ಕೆ ಹುಡುಕಿ</div><div class="tipen">Find trains between any two stations</div></div></div>
+        <div class="tiprow"><span class="tipico">🚶</span><div><div class="tipkn">ಕೋಚ್ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ ಸರಿಯಾದ ಡಬ್ಬಿ ಮುಂದೆ ನಿಲ್ಲಿ</div><div class="tipen">Scroll the coach strip and stand correctly</div></div></div>
+      </div>
+      <div class="infcard">
+        <div class="infct">📱 ಈ ಅಪ್ಲಿಕೇಶನ್ ಬಗ್ಗೆ</div>
+        <div class="abtk">ನಮ್ಮ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಚಿಕ್ಕ ರೈಲ್ವೆ ನಿಲ್ದಾಣಗಳಲ್ಲಿ ಪ್ರಯಾಣಿಕರಿಗೆ ಸಹಾಯ ಮಾಡಲು ತಯಾರಿಸಲಾಗಿದೆ.</div>
+        <div class="abte">Namma-Platform helps rural and elderly passengers at small Karnataka railway stations — providing platform numbers, coach layouts, and Kannada voice announcements.</div>
+        <div class="fbbadge"><span>🔥</span><span class="fbt">Powered by Firebase Auth + Firestore</span></div>
+        <div class="ver">Version 2.0 · Developed by Aditya P Bapat · Internship Final Project</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="ni active" id="nv-home" onclick="goPage('home')"><span class="nicon">🏠</span><span class="nlbl">ಮುಖಪುಟ</span></div>
+    <div class="ni" id="nv-search" onclick="goPage('search')"><span class="nicon">🔍</span><span class="nlbl">ಹುಡುಕಿ</span></div>
+    <div class="ni" id="nv-saved" onclick="goPage('saved')"><span class="nicon">⭐</span><span class="nlbl">Saved</span></div>
+    <div class="ni" id="nv-info" onclick="goPage('info')"><span class="nicon">ℹ️</span><span class="nlbl">ಮಾಹಿತಿ</span></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ AUTH STATE ============
+let currentUser = null; // {name, email}
+
+function switchTab(tab){
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+  document.getElementById('loginForm').style.display = tab==='login'?'':'none';
+  document.getElementById('signupForm').style.display = tab==='signup'?'':'none';
+  clearAuthErrors();
+}
+function clearAuthErrors(){
+  ['loginErr','signupErr'].forEach(id=>{const el=document.getElementById(id);el.textContent='';el.classList.remove('show');});
+}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');}
+
+function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pwd=document.getElementById('loginPwd').value;
+  if(!email){showErr('loginErr','ಇಮೇಲ್ ನಮೂದಿಸಿ / Please enter email');return;}
+  if(!email.includes('@')){showErr('loginErr','ಸರಿಯಾದ ಇಮೇಲ್ ನಮೂದಿಸಿ / Invalid email');return;}
+  if(pwd.length<6){showErr('loginErr','ಪಾಸ್‌ವರ್ಡ್ ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳು / Password min 6 chars');return;}
+  // Simulate login — in production connect Firebase Auth here
+  const name = email.split('@')[0].charAt(0).toUpperCase()+email.split('@')[0].slice(1);
+  launchApp({name, email});
+}
+function doSignup(){
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pwd=document.getElementById('signupPwd').value;
+  const pwd2=document.getElementById('signupPwd2').value;
+  if(!name){showErr('signupErr','ಹೆಸರು ನಮೂದಿಸಿ / Please enter your name');return;}
+  if(!email||!email.includes('@')){showErr('signupErr','ಸರಿಯಾದ ಇಮೇಲ್ ನಮೂದಿಸಿ / Invalid email');return;}
+  if(pwd.length<6){showErr('signupErr','ಪಾಸ್‌ವರ್ಡ್ ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳು / Password min 6 chars');return;}
+  if(pwd!==pwd2){showErr('signupErr','ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಕೆಯಾಗುತ್ತಿಲ್ಲ / Passwords do not match');return;}
+  // Simulate signup — in production connect Firebase Auth here
+  launchApp({name, email});
+}
+function doGuest(){
+  launchApp({name:'Guest', email:'guest@namma-platform.app'});
+}
+function launchApp(user){
+  currentUser = user;
+  document.getElementById('authShell').style.display='none';
+  document.getElementById('shell').classList.add('visible');
+  document.getElementById('uname').textContent = user.name;
+  document.getElementById('pdName').textContent = user.name;
+  document.getElementById('pdEmail').textContent = user.email;
+}
+function doSignOut(){
+  currentUser = null;
+  closeProfile();
+  document.getElementById('shell').classList.remove('visible');
+  document.getElementById('authShell').style.display='';
+  // Reset inputs
+  ['loginEmail','loginPwd','signupName','signupEmail','signupPwd','signupPwd2'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  clearAuthErrors();
+  switchTab('login');
+}
+
+// Profile dropdown
+function toggleProfile(e){
+  e.stopPropagation();
+  const drop=document.getElementById('profileDrop');
+  drop.classList.toggle('open');
+}
+function closeProfile(){
+  document.getElementById('profileDrop').classList.remove('open');
+}
+document.addEventListener('click',()=>closeProfile());
+
+// ============ DATA ============
+const stations=[
+  {en:'Arsikere',kn:'ಅರಸೀಕೆರೆ',code:'ASK'},
+  {en:'Tumkur',kn:'ತುಮಕೂರು',code:'TK'},
+  {en:'Tiptur',kn:'ತಿಪ್ಟೂರು',code:'TPTR'},
+  {en:'Hassan',kn:'ಹಾಸನ',code:'HAS'},
+  {en:'Shivamogga',kn:'ಶಿವಮೊಗ್ಗ',code:'SMET'},
+  {en:'Davangere',kn:'ದಾವಣಗೆರೆ',code:'DVG'},
+  {en:'Birur',kn:'ಬಿರೂರು',code:'BRR'},
+  {en:'Kadur',kn:'ಕಡೂರು',code:'KD'},
+  {en:'Bengaluru',kn:'ಬೆಂಗಳೂರು',code:'SBC'},
+  {en:'Mysuru',kn:'ಮೈಸೂರು',code:'MYS'},
+  {en:'Hubballi',kn:'ಹುಬ್ಬಳ್ಳಿ',code:'UBL'},
+  {en:'Belagavi',kn:'ಬೆಳಗಾವಿ',code:'BGM'},
+  {en:'Mandya',kn:'ಮಂಡ್ಯ',code:'MYA'},
+  {en:'Ballari',kn:'ಬಳ್ಳಾರಿ',code:'BAY'},
+  {en:'Dharwad',kn:'ಧಾರವಾಡ',code:'DWR'},
+];
+const allTrains=[
+  {num:'56252',name:'ಹಾಸನ ಪ್ಯಾಸೆಂಜರ್',nameEn:'Hassan Passenger',platform:1,coaches:['engine','general','general','ladies','guard'],availability:{general:'Available',sleeper:'N/A',ac:'N/A'},schedule:{ASK:'08:00',KD:'08:45',BRR:'09:15',HAS:'10:00'},route:['ASK','KD','BRR','HAS']},
+  {num:'16557',name:'ಮೈಸೂರು ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Mysuru Express',platform:2,coaches:['engine','general','sleeper','sleeper','ladies','ac','ac','pantry','sleeper','guard'],availability:{general:'Available',sleeper:'Waitlist',ac:'Available'},schedule:{ASK:'10:25',TK:'11:10',SBC:'12:30',MYS:'14:10'},route:['ASK','TK','SBC','MYS']},
+  {num:'16229',name:'ಶ್ರೀಶೈಲ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Srishaila Express',platform:1,coaches:['engine','general','general','ladies','sleeper','sleeper','sleeper','ac','guard'],availability:{general:'Available',sleeper:'Available',ac:'Waitlist'},schedule:{ASK:'11:40',BRR:'12:20',SMET:'13:15',DVG:'14:30'},route:['ASK','BRR','SMET','DVG']},
+  {num:'17310',name:'ಬೆಂಗಳೂರು ಫಾಸ್ಟ್',nameEn:'Bengaluru Fast',platform:3,coaches:['engine','general','general','ladies','sleeper','sleeper','ac','ac','pantry','guard'],availability:{general:'Full',sleeper:'Waitlist',ac:'Available'},schedule:{ASK:'12:55',TPTR:'13:40',TK:'14:25',SBC:'15:30'},route:['ASK','TPTR','TK','SBC']},
+  {num:'17312',name:'ಶಿವಮೊಗ್ಗ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Shivamogga Express',platform:2,coaches:['engine','general','ladies','sleeper','sleeper','ac','guard'],availability:{general:'Available',sleeper:'Available',ac:'Available'},schedule:{SBC:'16:00',ASK:'18:30',BRR:'19:15',SMET:'20:00'},route:['SBC','ASK','BRR','SMET']},
+  {num:'12028',name:'ಶತಾಬ್ದಿ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Shatabdi Express',platform:1,coaches:['engine','ac','ac','ac','pantry','ac','ac','guard'],availability:{general:'N/A',sleeper:'N/A',ac:'Available'},schedule:{SBC:'06:00',MYA:'07:10',MYS:'08:00'},route:['SBC','MYA','MYS']},
+  {num:'16536',name:'ಗೋಲ್ ಗುಂಬಜ್ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Gol Gumbaz Express',platform:2,coaches:['engine','general','ladies','sleeper','sleeper','ac','guard'],availability:{general:'Available',sleeper:'Available',ac:'Available'},schedule:{SBC:'08:30',DVG:'11:00',UBL:'13:30',DWR:'14:00',BGM:'15:20'},route:['SBC','DVG','UBL','DWR','BGM']},
+  {num:'56903',name:'ತುಮಕೂರು ಪ್ಯಾಸೆಂಜರ್',nameEn:'Tumkur Passenger',platform:3,coaches:['engine','general','general','general','ladies','guard'],availability:{general:'Available',sleeper:'N/A',ac:'N/A'},schedule:{TK:'12:05',KD:'12:50',BRR:'13:30',HAS:'14:20'},route:['TK','KD','BRR','HAS']},
+  {num:'16213',name:'ಎರ್ನಾಕುಲಂ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Ernakulam Express',platform:1,coaches:['engine','sleeper','sleeper','ladies','general','ac','guard'],availability:{general:'Available',sleeper:'Waitlist',ac:'Available'},schedule:{SBC:'07:00',MYS:'08:40',HAS:'10:20',SMET:'11:50'},route:['SBC','MYS','HAS','SMET']},
+  {num:'17304',name:'ಮೈಸೂರು ವನ್ಯಜೀವಿ',nameEn:'Mysuru Wildlife Express',platform:2,coaches:['engine','general','general','ladies','sleeper','sleeper','ac','pantry','guard'],availability:{general:'Available',sleeper:'Available',ac:'Available'},schedule:{MYS:'09:00',MYA:'09:55',SBC:'11:00',TK:'12:10',DVG:'14:00'},route:['MYS','MYA','SBC','TK','DVG']},
+  {num:'11036',name:'ಹಂಪಿ ಎಕ್ಸ್‌ಪ್ರೆಸ್',nameEn:'Hampi Express',platform:1,coaches:['engine','sleeper','sleeper','sleeper','ladies','general','ac','ac','pantry','guard'],availability:{general:'Available',sleeper:'Available',ac:'Waitlist'},schedule:{SBC:'20:30',DVG:'23:00',UBL:'01:30',BAY:'03:00'},route:['SBC','DVG','UBL','BAY']},
+  {num:'22681',name:'ಬೆಂಗಳೂರು ರಾಜಧಾನಿ',nameEn:'Bengaluru Rajdhani',platform:3,coaches:['engine','ac','ac','pantry','ac','ac','ac','guard'],availability:{general:'N/A',sleeper:'N/A',ac:'Available'},schedule:{SBC:'07:00',DVG:'10:00',UBL:'12:00',DWR:'12:30',BGM:'14:00'},route:['SBC','DVG','UBL','DWR','BGM']},
+];
+const cMeta={engine:{label:'ENG',kn:'ಎಂಜಿನ್',descKn:'ಚಾಲಕ ಎಂಜಿನ್',desc:'Locomotive'},general:{label:'GEN',kn:'ಸಾಮಾನ್ಯ',descKn:'ಸಾಮಾನ್ಯ ಡಬ್ಬಿ',desc:'General – no reservation'},sleeper:{label:'SL',kn:'ಸ್ಲೀಪರ್',descKn:'ಮಲಗುವ ಡಬ್ಬಿ',desc:'Sleeper class'},ladies:{label:'L',kn:'ಮಹಿಳೆ',descKn:'ಮಹಿಳಾ ಡಬ್ಬಿ',desc:'Ladies coach'},ac:{label:'AC',kn:'ಎಸಿ',descKn:'ಹವಾನಿಯಂತ್ರಿತ ಡಬ್ಬಿ',desc:'AC coach'},guard:{label:'GRD',kn:'ಗಾರ್ಡ್',descKn:'ಕಾವಲು ಡಬ್ಬಿ',desc:'Guard van'},pantry:{label:'PAN',kn:'ಊಟ',descKn:'ಊಟದ ಡಬ್ಬಿ',desc:'Pantry car'}};
+
+let curStn=stations[0], curTrIdx=0, trains=[], saved=[], curPage='home';
+
+// ============ KANNADA TIME WORDS ============
+// Converts "10:30" → "ಹತ್ತು ಮೂವತ್ತು" (ten thirty)
+const knHours=['ಹನ್ನೆರಡು','ಒಂದು','ಎರಡು','ಮೂರು','ನಾಲ್ಕು','ಐದು','ಆರು','ಏಳು','ಎಂಟು','ಒಂಬತ್ತು','ಹತ್ತು','ಹನ್ನೊಂದು','ಹನ್ನೆರಡು'];
+const knMins={
+  0:'',5:'ಐದು',10:'ಹತ್ತು',15:'ಹದಿನೈದು',20:'ಇಪ್ಪತ್ತು',25:'ಇಪ್ಪತ್ತೈದು',
+  30:'ಮೂವತ್ತು',35:'ಮೂವತ್ತೈದು',40:'ನಲವತ್ತು',45:'ನಲವತ್ತೈದು',50:'ಐವತ್ತು',55:'ಐವತ್ತೈದು'
+};
+// Full minute-by-minute fallback for non-5-multiples
+const knUnits=['ಶೂನ್ಯ','ಒಂದು','ಎರಡು','ಮೂರು','ನಾಲ್ಕು','ಐದು','ಆರು','ಏಳು','ಎಂಟು','ಒಂಬತ್ತು','ಹತ್ತು','ಹನ್ನೊಂದು','ಹನ್ನೆರಡು','ಹದಿಮೂರು','ಹದಿನಾಲ್ಕು','ಹದಿನೈದು','ಹದಿನಾರು','ಹದಿನೇಳು','ಹದಿನೆಂಟು','ಹತ್ತೊಂಬತ್ತು','ಇಪ್ಪತ್ತು','ಇಪ್ಪತ್ತೊಂದು','ಇಪ್ಪತ್ತೆರಡು','ಇಪ್ಪತ್ತಮೂರು','ಇಪ್ಪತ್ತನಾಲ್ಕು','ಇಪ್ಪತ್ತೈದು','ಇಪ್ಪತ್ತಾರು','ಇಪ್ಪತ್ತೇಳು','ಇಪ್ಪತ್ತೆಂಟು','ಇಪ್ಪತ್ತೊಂಬತ್ತು','ಮೂವತ್ತು','ಮೂವತ್ತೊಂದು','ಮೂವತ್ತೆರಡು','ಮೂವತ್ತಮೂರು','ಮೂವತ್ತನಾಲ್ಕು','ಮೂವತ್ತೈದು','ಮೂವತ್ತಾರು','ಮೂವತ್ತೇಳು','ಮೂವತ್ತೆಂಟು','ಮೂವತ್ತೊಂಬತ್ತು','ನಲವತ್ತು','ನಲವತ್ತೊಂದು','ನಲವತ್ತೆರಡು','ನಲವತ್ತಮೂರು','ನಲವತ್ತನಾಲ್ಕು','ನಲವತ್ತೈದು','ನಲವತ್ತಾರು','ನಲವತ್ತೇಳು','ನಲವತ್ತೆಂಟು','ನಲವತ್ತೊಂಬತ್ತು','ಐವತ್ತು','ಐವತ್ತೊಂದು','ಐವತ್ತೆರಡು','ಐವತ್ತಮೂರು','ಐವತ್ತನಾಲ್ಕು','ಐವತ್ತೈದು','ಐವತ್ತಾರು','ಐವತ್ತೇಳು','ಐವತ್ತೆಂಟು','ಐವತ್ತೊಂಬತ್ತು'];
+function timeToKannada(timeStr){
+  // timeStr is "HH:MM" 24h
+  if(!timeStr||!timeStr.includes(':'))return timeStr;
+  const [h24,m]=timeStr.split(':').map(Number);
+  const h12=h24===0?12:h24>12?h24-12:h24;
+  const period=h24>=12?'ಮಧ್ಯಾಹ್ನ':'ಬೆಳಿಗ್ಗೆ';
+  const hWord=knHours[h12]||String(h12);
+  const mWord=m===0?'ಗಂಟೆ ಸರಿಯಾಗಿ':(knUnits[m]||String(m))+' ನಿಮಿಷ';
+  if(m===0){
+    return `${period} ${hWord} ಗಂಟೆ`;
+  }
+  return `${period} ${hWord} ಗಂಟೆ ${knUnits[m]||String(m)} ನಿಮಿಷ`;
+}
+
+// ============ CLOCK ============
+function tick(){const n=new Date();document.getElementById('clk').textContent=n.getHours()+':'+(n.getMinutes()+'').padStart(2,'0');}
+setInterval(tick,30000);tick();
+
+// ============ PAGE NAV ============
+function goPage(p){
+  curPage=p;
+  ['home','search','saved','info'].forEach(x=>{
+    document.getElementById('pg'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===p);
+    document.getElementById('nv-'+x).classList.toggle('active',x===p);
+  });
+  document.getElementById('stnwrap').style.display=p==='home'?'':'none';
+  document.getElementById('spick').classList.remove('open');
+  if(p==='saved')renderSaved();
+}
+
+// ============ STATION PICKER ============
+function togglePicker(){const s=document.getElementById('spick');s.classList.toggle('open');if(s.classList.contains('open'))renderSList();}
+function filterStn(v){renderSList(v);}
+function renderSList(f=''){
+  const el=document.getElementById('slist');el.innerHTML='';
+  stations.filter(s=>!f||s.en.toLowerCase().includes(f.toLowerCase())||s.kn.includes(f)).forEach(s=>{
+    const d=document.createElement('div');d.className='sopt'+(s.code===curStn.code?' active':'');
+    d.innerHTML=`<div><div class="sne">${s.en}</div><div class="snkn2">${s.kn}</div></div><div class="scode">${s.code}</div>`;
+    d.onclick=()=>selectStn(s);el.appendChild(d);
+  });
+}
+function selectStn(s){
+  curStn=s;document.getElementById('snEn').textContent=s.en;document.getElementById('snKn').textContent=s.kn;
+  document.getElementById('spick').classList.remove('open');
+  trains=getTrains(s.code);curTrIdx=0;renderTrains();renderCoaches(0);
+  document.getElementById('annBox').classList.remove('show');
+}
+
+// ============ HELPERS ============
+function getDestEn(c){return stations.find(s=>s.code===c)?.en||c;}
+function getDestKn(c){return stations.find(s=>s.code===c)?.kn||c;}
+function tStr(t){if(!t)return'--';const[h,m]=t.split(':').map(Number);return`${h>12?h-12:h===0?12:h}:${(m+'').padStart(2,'0')} ${h>=12?'PM':'AM'}`;}
+function avCls(a){return a==='Available'?'av':a==='Waitlist'?'wl':a==='Full'?'fl':'';}
+
+function getTrains(code){
+  const r=[];
+  allTrains.forEach(t=>{if(t.route.includes(code)){const tm=t.schedule[code]||'00:00';r.push({...t,time:tm,destinationEn:getDestEn(t.route[t.route.length-1]),destination:getDestKn(t.route[t.route.length-1])});}});
+  r.sort((a,b)=>a.time.localeCompare(b.time));return r.slice(0,6);
+}
+
+// ============ RENDER TRAINS ============
+function renderTrains(){
+  const el=document.getElementById('tlist');el.innerHTML='';
+  if(!trains.length){el.innerHTML='<div class="notr"><div class="ntico">🚉</div><div class="ntkn">ಈ ನಿಲ್ದಾಣದಲ್ಲಿ ರೈಲುಗಳಿಲ್ಲ</div></div>';return;}
+  trains.forEach((tr,i)=>{
+    const sv=saved.some(s=>s.num===tr.num);
+    const d=document.createElement('div');
+    d.className='tcard'+(i===curTrIdx?' sel':'');
+    d.onclick=e=>{if(e.target.closest('.sbtn')||e.target.closest('.card-sahaya'))return;curTrIdx=i;renderTrains();renderCoaches(i);document.getElementById('annBox').classList.remove('show');};
+    // Build coach mini-strip
+    let coachHtml='';
+    tr.coaches.forEach((tp,ci)=>{
+      const m=cMeta[tp];
+      const cnt=(tp==='sleeper')?tr.coaches.slice(0,ci+1).filter(c=>c==='sleeper').length:0;
+      const lbl=(tp==='sleeper')?'S'+cnt:m.label;
+      coachHtml+=`<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div class="cbox ${tp}" style="width:34px;height:22px;font-size:7px">${lbl}</div><div style="font-size:6px;color:#778899">${m.kn}</div></div>`;
+      if(ci<tr.coaches.length-1)coachHtml+='<div class="cconn" style="width:4px;height:2px"></div>';
+    });
+    // Unique ann box IDs per card
+    const annId=`ann_${tr.num}`;
+    const annTxtId=`annTxt_${tr.num}`;
+    const annStsId=`annSts_${tr.num}`;
+    d.innerHTML=`
+      <div class="tch ${i===0?'nxt':''}">
+        ${i===0?'<span class="nbadge">NEXT</span>':''}
+        <span class="tnum">#${tr.num}</span>
+        <button class="sbtn" onclick="doSave('${tr.num}')">${sv?'⭐':'☆'}</button>
+        <div style="text-align:right"><div class="ttime">${tStr(tr.time)}</div><div class="ttlbl">Departs</div></div>
+      </div>
+      <div class="tcb">
+        <div class="tnkn">${tr.name}</div>
+        <div class="tnen">${tr.nameEn}</div>
+        <div class="tmeta">
+          <div class="mitem"><span class="mkey">Platform</span><div class="pbadge"><span class="pnum">${tr.platform}</span><span class="ptkn">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</span></div></div>
+          <div class="mitem"><span class="mkey">Destination</span><div class="dest-en">${tr.destinationEn}</div><div class="dest-kn">${tr.destination}</div></div>
+          <div class="mitem"><span class="mkey">General</span><span class="avb ${avCls(tr.availability?.general||'')}">${tr.availability?.general||'N/A'}</span></div>
+        </div>
+        <div style="overflow-x:auto;margin-top:6px;padding-bottom:2px"><div style="display:flex;align-items:center;width:max-content">${coachHtml}</div></div>
+        <button class="card-sahaya" onclick="doSpeakCard('${tr.num}','${annId}','${annTxtId}','${annStsId}')">
+          <div class="mic-sm">🔊</div>
+          <div><div>ಸಹಾಯ ಮಾಡಿ</div><span class="sub-sm">Tap for Kannada Announcement</span></div>
+        </button>
+        <div class="ann" id="${annId}">
+          <span class="anicon">📢</span>
+          <div class="ankn" id="${annTxtId}"></div>
+          <div class="tsts" id="${annStsId}"></div>
+        </div>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+
+// ============ COACHES ============
+function renderCoaches(idx){
+  const tr=trains[idx];if(!tr)return;
+  document.getElementById('ctnm').textContent=tr.nameEn;
+  const strip=document.getElementById('cstrip');strip.innerHTML='';
+  tr.coaches.forEach((type,i)=>{
+    const m=cMeta[type];const cnt=(type==='sleeper')?tr.coaches.slice(0,i+1).filter(c=>c==='sleeper').length:0;
+    const lbl=(type==='sleeper')?`S${cnt}`:m.label;
+    const item=document.createElement('div');item.className='citem';
+    item.innerHTML=`<div class="cbox ${type}" onclick="showCI('${type}')">${lbl}</div><div class="cwhl"><div class="wh"></div><div class="wh"></div></div><div class="clbl">${lbl}</div><div class="clkn">${m.kn}</div>`;
+    strip.appendChild(item);
+    if(i<tr.coaches.length-1){const c=document.createElement('div');c.className='cconn';strip.appendChild(c);}
+  });
+  document.getElementById('cttip').classList.remove('show');
+}
+function showCI(type){const m=cMeta[type];const t=document.getElementById('cttip');t.classList.add('show');t.innerHTML=`<div class="kn">${m.descKn}</div><div style="font-size:10px;color:#9BAABB;margin-top:2px">${m.desc}</div>`;}
+
+// ============ TTS / SAHAYA MADI ============
+function buildText(tr){
+  const gp=tr.coaches.indexOf('general')+1;
+  const lp=tr.coaches.indexOf('ladies')+1;
+  const g=gp>0?`ಸಾಮಾನ್ಯ ಡಬ್ಬಿ ${knUnits[gp]||gp}ನೇ ಡಬ್ಬಿ ರಲ್ಲಿದೆ. `:'';
+  const l=lp>0?`ಮಹಿಳಾ ಡಬ್ಬಿ ${knUnits[lp]||lp}ನೇ ಡಬ್ಬಿ ರಲ್ಲಿದೆ. `:'';
+  // Time in correct Kannada format: hours:minutes word form, NOT decimal point
+  const timeKn=timeToKannada(tr.time);
+  const numDigits=tr.num.split('').join(' ');
+  return `ಗಮನಿಸಿ! ರೈಲು ಸಂಖ್ಯೆ ${numDigits}, ${tr.name}, ${timeKn} ಕ್ಕೆ ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ನಂಬರ್ ${tr.platform} ರಲ್ಲಿ ಬರುತ್ತದೆ. ${g}${l}ದಯವಿಟ್ಟು ಸರಿಯಾದ ಜಾಗದಲ್ಲಿ ನಿಲ್ಲಿ. ಧನ್ಯವಾದಗಳು.`;
+}
+
+function speakIt(text,boxId,txtId,stsId){
+  const box=document.getElementById(boxId),txtEl=document.getElementById(txtId),stsEl=document.getElementById(stsId);
+  if(!box)return;
+  box.classList.add('show');
+  txtEl.innerHTML=text+'<span class="sdots"><span></span><span></span><span></span></span>';
+  if(window.AndroidTTS){
+    stsEl.innerHTML='🔊 <span>ಕನ್ನಡದಲ್ಲಿ ಓದಲಾಗುತ್ತಿದೆ...</span>';
+    AndroidTTS.speak(text);
+    setTimeout(()=>{txtEl.querySelectorAll('.sdots').forEach(d=>d.remove());stsEl.innerHTML='✅ <span>ಪ್ರಕಟಣೆ ಪೂರ್ಣಗೊಂಡಿದೆ</span>';},4000);
+    return;
+  }
+  if('speechSynthesis'in window){
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='kn-IN';u.rate=0.82;u.pitch=1;
+    const vs=window.speechSynthesis.getVoices();
+    const kv=vs.find(v=>v.lang==='kn-IN'||v.lang.startsWith('kn'));
+    if(kv)u.voice=kv;
+    stsEl.innerHTML='🔊 <span>ಕನ್ನಡದಲ್ಲಿ ಓದಲಾಗುತ್ತಿದೆ...</span>';
+    u.onend=()=>{txtEl.querySelectorAll('.sdots').forEach(d=>d.remove());stsEl.innerHTML='✅ <span>ಪ್ರಕಟಣೆ ಪೂರ್ಣಗೊಂಡಿದೆ</span>';};
+    u.onerror=()=>{txtEl.querySelectorAll('.sdots').forEach(d=>d.remove());stsEl.innerHTML='ℹ️ <span>ಪಠ್ಯ ಮೇಲೆ ತೋರಿಸಲಾಗಿದೆ</span>';};
+    window.speechSynthesis.speak(u);
+    return;
+  }
+  txtEl.querySelectorAll('.sdots').forEach(d=>d.remove());
+  stsEl.innerHTML='ℹ️ <span>ಪಠ್ಯ ಮೇಲೆ ತೋರಿಸಲಾಗಿದೆ (on Android voice will play)</span>';
+}
+
+// Global "ಸಹಾಯ ಮಾಡಿ" — speaks currently selected train
+function doSpeak(){const tr=trains[curTrIdx];if(!tr)return;speakIt(buildText(tr),'annBox','annTxt','annSts');}
+
+// Per-card "ಸಹಾಯ ಮಾಡಿ"
+function doSpeakCard(num,boxId,txtId,stsId){
+  const tr=trains.find(t=>t.num===num);
+  if(!tr)return;
+  speakIt(buildText(tr),boxId,txtId,stsId);
+}
+
+// Search page speak
+function doSpeakSearch(enc){const tr=JSON.parse(decodeURIComponent(enc));speakIt(buildText(tr),'srAnnBox','srAnnTxt','srAnnSts');}
+
+// ============ SAVE ============
+function doSave(num){
+  const tr=trains.find(t=>t.num===num);
+  if(!tr)return;
+  const ex=saved.findIndex(s=>s.num===num);
+  if(ex>-1){saved.splice(ex,1);showToast('☆ ತೆಗೆದಿದೆ / Removed');}
+  else{saved.push({...tr,savedAt:new Date().toISOString()});showToast('⭐ ಉಳಿಸಲಾಗಿದೆ / Saved!');}
+  renderTrains();renderSaved();
+}
+function doSaveSearch(enc){
+  const tr=JSON.parse(decodeURIComponent(enc));
+  const ex=saved.findIndex(s=>s.num===tr.num);
+  if(ex>-1){saved.splice(ex,1);showToast('☆ ತೆಗೆದಿದೆ / Removed');}
+  else{saved.push({...tr,savedAt:new Date().toISOString()});showToast('⭐ ಉಳಿಸಲಾಗಿದೆ / Saved!');}
+  renderTrains();renderSaved();
+  const f=document.getElementById('srFrom').value,t2=document.getElementById('srTo').value,d=document.getElementById('srDate').value;
+  if(f!==t2)renderSrResults(searchBetween(f,t2,d),f,t2,d);
+}
+function removeSaved(num){saved=saved.filter(s=>s.num!==num);renderSaved();renderTrains();showToast('🗑 ತೆಗೆದಿದೆ / Removed');}
+
+function renderSaved(){
+  const el=document.getElementById('svCnt');
+  if(!saved.length){el.innerHTML='<div class="svmt"><div class="svmico">⭐</div><div class="svmkn">ಉಳಿಸಿದ ರೈಲುಗಳು ಇಲ್ಲ</div><div class="svmen">No saved trains. Tap ☆ on any card.</div></div>';return;}
+  el.innerHTML='';
+  saved.forEach(s=>{
+    const c=document.createElement('div');c.className='svcard';
+    c.innerHTML=`<div class="svch"><span class="tnum">#${s.num}</span><span style="font-size:10px;color:#9BAABB;margin-left:5px">${tStr(s.time)}</span><button class="dsbtn" onclick="removeSaved('${s.num}')">🗑</button></div><div class="svcb"><div class="tnkn">${s.name}</div><div class="tnen">${s.nameEn}</div><div class="tmeta" style="margin-top:5px"><div class="mitem"><span class="mkey">Platform</span><div class="pbadge"><span class="pnum">${s.platform}</span><span class="ptkn">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</span></div></div><div class="mitem"><span class="mkey">General</span><span class="avb ${avCls(s.availability?.general||'')}">${s.availability?.general||'N/A'}</span></div><div class="mitem"><span class="mkey">Saved</span><span style="font-size:10px;color:#9BAABB">${new Date(s.savedAt).toLocaleDateString('en-IN')}</span></div></div></div>`;
+    el.appendChild(c);
+  });
+}
+
+// ============ SEARCH ============
+function populateDDs(){
+  ['srFrom','srTo'].forEach(id=>{
+    const sel=document.getElementById(id);sel.innerHTML='';
+    stations.forEach(s=>{const o=document.createElement('option');o.value=s.code;o.textContent=`${s.en} (${s.code})`;sel.appendChild(o);});
+  });
+  document.getElementById('srTo').value='SBC';
+  document.getElementById('srDate').value=new Date().toISOString().split('T')[0];
+}
+function doSwap(){const f=document.getElementById('srFrom'),t=document.getElementById('srTo');[f.value,t.value]=[t.value,f.value];}
+function doSearch(){
+  const f=document.getElementById('srFrom').value,t=document.getElementById('srTo').value,d=document.getElementById('srDate').value;
+  if(f===t){showToast('ℹ️ ಒಂದೇ ನಿಲ್ದಾಣ ಆಯ್ಕೆ ಮಾಡಬೇಡಿ');return;}
+  renderSrResults(searchBetween(f,t,d),f,t,d);
+}
+function dateAvail(num,cls,d){
+  if(!d)return'Available';
+  const seed=d.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+1),0)+(num+cls).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const r=seed%10;
+  if(cls==='general')return r<6?'Available':r<8?'Waitlist':'Full';
+  if(cls==='sleeper')return r<5?'Available':r<8?'Waitlist':'Full';
+  if(cls==='ac')return r<7?'Available':r<9?'Waitlist':'Full';
+  return'N/A';
+}
+function searchBetween(fc,tc,d){
+  const r=[];
+  allTrains.forEach(t=>{
+    const fi=t.route.indexOf(fc),ti=t.route.indexOf(tc);
+    if(fi!==-1&&ti!==-1&&ti>fi){
+      const tm=t.schedule[fc]||'00:00',at=t.schedule[tc]||'00:00';
+      const ba=t.availability||{};
+      const av={general:ba.general==='N/A'?'N/A':dateAvail(t.num,'general',d),sleeper:ba.sleeper==='N/A'?'N/A':dateAvail(t.num,'sleeper',d),ac:ba.ac==='N/A'?'N/A':dateAvail(t.num,'ac',d)};
+      r.push({...t,time:tm,arrTime:at,availability:av,destinationEn:getDestEn(tc),destination:getDestKn(tc)});
+    }
+  });
+  r.sort((a,b)=>a.time.localeCompare(b.time));return r;
+}
+function renderSrResults(results,fc,tc,d){
+  const el=document.getElementById('srRes');
+  const fn=stations.find(s=>s.code===fc)?.en||fc,tn=stations.find(s=>s.code===tc)?.en||tc;
+  const ds=d?new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'';
+  if(!results.length){el.innerHTML=`<div class="notr"><div class="ntico">😕</div><div class="ntkn">ರೈಲುಗಳು ಸಿಗಲಿಲ್ಲ</div><div style="font-size:10px;color:#A0B0C0;margin-top:4px">No trains found from ${fn} to ${tn}</div></div>`;return;}
+  let h=`<div class="rtbann"><span>🚉</span><span class="rtft">${fn}</span><span class="rtarr">→</span><span class="rtft">${tn}</span></div><div class="srmt">${results.length} train${results.length>1?'s':''} found · ${ds}</div>`;
+  results.forEach(tr=>{
+    const sv=saved.some(s=>s.num===tr.num);
+    const enc=encodeURIComponent(JSON.stringify(tr));
+    h+=`<div class="tcard"><div class="tch"><span class="tnum">#${tr.num}</span><button class="sbtn" onclick="doSaveSearch('${enc}')">${sv?'⭐':'☆'}</button><div style="text-align:right"><div class="ttime" style="font-size:12px">${tStr(tr.time)} → ${tStr(tr.arrTime)}</div><div class="ttlbl">Dep → Arr</div></div></div><div class="tcb"><div class="tnkn">${tr.name}</div><div class="tnen">${tr.nameEn}</div><div class="tmeta"><div class="mitem"><span class="mkey">Platform</span><div class="pbadge"><span class="pnum">${tr.platform}</span><span class="ptkn">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</span></div></div><div class="mitem"><span class="mkey">General</span><span class="avb ${avCls(tr.availability?.general||'')}">${tr.availability?.general||'N/A'}</span></div><div class="mitem"><span class="mkey">Sleeper</span><span class="avb ${avCls(tr.availability?.sleeper||'')}">${tr.availability?.sleeper||'N/A'}</span></div><div class="mitem"><span class="mkey">AC</span><span class="avb ${avCls(tr.availability?.ac||'')}">${tr.availability?.ac||'N/A'}</span></div></div><div style="overflow-x:auto;margin-top:6px;padding-bottom:3px"><div style="display:flex;align-items:center;width:max-content">${tr.coaches.map((tp,i)=>{const m=cMeta[tp];const cnt=(tp==='sleeper')?tr.coaches.slice(0,i+1).filter(c=>c==='sleeper').length:0;const lbl=(tp==='sleeper')?'S'+cnt:m.label;return`<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><div class="cbox ${tp}" style="width:34px;height:22px;font-size:7px">${lbl}</div><div style="font-size:6px;color:#778899">${m.kn}</div></div>${i<tr.coaches.length-1?'<div class="cconn" style="width:4px;height:2px"></div>':''}`}).join('')}</div></div><button class="card-sahaya" onclick="doSpeakSearch('${enc}')"><div class="mic-sm">🔊</div><div><div>ಸಹಾಯ ಮಾಡಿ</div><span class="sub-sm">Tap for Kannada Announcement</span></div></button></div></div>`;
+  });
+  el.innerHTML=h;
+}
+
+// ============ TOAST ============
+let tTimer;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ============ INIT ============
+trains=getTrains(curStn.code);
+renderTrains();renderCoaches(0);populateDDs();
+if('speechSynthesis'in window)window.speechSynthesis.getVoices();
+</script>
+</body>
+</html>
